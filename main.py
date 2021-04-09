@@ -1,6 +1,6 @@
 class Mirror():
-	def __init__(self, front_wedge=0, back_wedge=0, refractive_index=1.5, thickness=1):
-		self.t = thickness
+
+	def __init__(self, front_wedge=0, back_wedge=0, refractive_index=1.5):
 		self.wf = front_wedge
 		self.wb = back_wedge
 		self.n = refractive_index
@@ -25,8 +25,8 @@ class Optics():
 		self.mirror = list()
 		self.space = list()
 
-	def add_mirror(self, wf=0, wb=0, n=1.5, t=1, *, m):
-		self.mirror.append( Mirror(wf, wb, n, t) )
+	def add_mirror(self, wf=0, wb=0, n=1.5):
+		self.mirror.append( Mirror(wf, wb, n) )
 
 	def add_space(self, d=10):
 		if isinstance(d, list) or isinstance(d, tuple):
