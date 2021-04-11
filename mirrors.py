@@ -1,5 +1,4 @@
 import numpy as np
-from math import fsum
 
 class Mirror():
 
@@ -38,15 +37,8 @@ class Optics():
         self.mirror = list()
 
     def add_mirror(self, *args):
-        for x in args:
-            if isinstance(x, Mirror): self.mirror.append(x)
-            elif isinstance(x, tuple): self.mirror.append( Mirror(*x) )
-            elif isinstance(x, (float, int)):
-                if fsum([isinstance(y, (float,int)) for y in args])==len(args):
-                    self.mirror.append( Mirror(*args) )
-                    break
-                else: raise TypeError
-            else: raise TypeError
+        if isinstance(args[0], Mirror): self.mirror.append(x)
+        else: self.mirror.append( Mirror(*args) )
 
     def reflection_angles(self, incident=0):
         m = len(self.mirror)
@@ -65,9 +57,13 @@ class Optics():
         ### RTS [mirror #][surface #][R or T][X or Y]
         RTS = np.array( RTS )
 
-        R = np.array([ RTS[0,0,0] ])
+        R = RTS[0,0,0]
         next = RTS[0,1,0]
-        R = np.vstack((R, angles( -next, -self.mirror[0].frontWedge, self.mirror[0].refractiveIndex, self.refractiveIndex)[1] ))
+        dim = R.ndim
+        if dim:
+            R = np.vstack((R, angles( -next, -self.mirror[0].frontWedge, self.mirror[0].refractiveIndex, self.refractiveIndex)[1] ))
+        else:
+            R = np.hstack((R, angles( -next, -self.mirror[0].frontWedge, self.mirror[0].refractiveIndex, self.refractiveIndex)[1] ))
 
         for i in range(1,m):                 ## for each mirror
             for s in (0,1):             ## for each surface, front and back
@@ -83,7 +79,8 @@ class Optics():
                     next = angles( -next, -self.mirror[j].backWedge, self.refractiveIndex, self.mirror[j].refractiveIndex)[1]
                     next = angles( -next, -self.mirror[j].frontWedge, self.mirror[j].refractiveIndex, self.refractiveIndex)[1]
 
-                R = np.vstack( R, next )
+                if dim: R = np.vstack( (R, next) )
+                else: R = np.hstack( (R, next) )
         return R
 
     def transmission_angle(self, incident=0):
