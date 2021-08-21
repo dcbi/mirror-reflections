@@ -48,19 +48,19 @@ reflections = optics.reflection_angles(incident=0, approx=True)
 transmitted = optics.transmission_angle(incident=0, approx=True)
 ```
 
-A numpy.ndarray object is returned, the shape/dimension of which is determined by the number of mirrors and whether or not the wedge angles were given in both X and Y. If wedge angles are given in both X and Y, call it '2D mirrors'. Otherwise, call it '1D mirrors'.
+A numpy.ndarray object is returned, the shape/dimension of which is determined by the number of mirrors and whether or not the wedge angles were given in both X and Y. If wedge angles are given in both X and Y, call it '2D-mirrors'. Otherwise, call it '1D-mirrors'.
 
-In the case of *m* 2D mirrors with *m>1*, the shape of the reflections array is (*m*,2,2). The indices go as \[mirror, surface, X or Y\]. For example:
+In the case of *m* 2D-mirrors with *m>1*, the shape of the reflections array is (*m*,2,2). The indices go as \[mirror, surface, X or Y\]. For example:
 ```python
-result[3,0,1]
+reflections[3,0,1]
 ```
-is the angle of the 3rd mirror's front surface in Y.
+is the angle of reflection from the 3rd mirror's front surface in Y.
 
-In the case of *m* 1D mirrors with *m>1*, the shape of the reflections array (*m*,2). The indices go as \[mirror, surface\].
+In the case of *m* 1D-mirrors with *m>1*, the shape of the reflections array (*m*,2). The indices go as \[mirror, surface\].
 
-In the case of a single mirror 2D mirror, the shape of the reflections array is (2,2). The indices go as \[surface, X or Y\]. In the case of a single 1D mirror, the shape is (2,) with its singular index representing the front or back surface.
+In the case of a single 2D-mirror, the shape of the reflections array is (2,2). The indices go as \[surface, X or Y\]. In the case of a single 1D-mirror, the shape is (2,) with its singular index representing the front or back surface.
 
-The transmitted angle is either shaped (2,) or is 0-dimensional, which is a single number. It is shaped (2,) for 2D mirrors, representing the angle in X and Y. 
+The transmitted angle is either shaped (2,) or is 0-dimensional, which is a single number. It is shaped (2,) for 2D-mirrors, representing the angle in X and Y. 
 
 ### Calculating wedge angles
 To calculate the wedge angles from measured reflections, call the function `wedges_from_reflections()`. Pass an array of reflection angles, a list of refractive indices, and optionally whether or not to use the small-angle approximation.
@@ -69,10 +69,10 @@ wedgeResults = wedges_from_reflections(reflection_array, index_array, approx=Tru
 ```
 It is best to shape the array of reflection angles passed to the function to match what would be returned by the `Optics.reflection_angles()` method described above, although it is not necessary as long as the the array order the numbers in a way that it can be reached via `numpy.ndarray.reshape()`.
 
-For example, for three 2D mirrors, the array should be (3,2,2). However, you can also make it (6,2) with the rows alternating between front and back surfaces and ordered by mirror.
+For example, for three 2D-mirrors, the array should be (3,2,2). However, you can also make it (6,2) with the rows alternating between front and back surfaces and ordered by mirror.
 
 A `scipy.optimize.OptimizeResult` object is returned. The attribute `scipy.optimize.OptimizeResult.x` stores the result array. The shape is as described above, but instead of each angle being a reflection, it is a tilt of a mirror surface.
 
 ### Calculating the optimal orientation
-The optimal orientation is specified by the angles by which to rotate each mirror such that the total angle of the transmitted light ray is minimized. To calculate these rotation angles, call the function `minimize_transmitted_angle()`. Pass any `Optics` object. A `scipy.optimize.OptimizeResult` object is returned. The attribute `scipy.optimize.OptimizeResult.x` stores the list of rotation angles.
+The optimal orientation is specified by the angles by which to rotate each mirror such that the total angle of the transmitted light ray is minimized. To calculate these angles, call the function `minimize_transmitted_angle()`. Pass any `Optics` object. A `scipy.optimize.OptimizeResult` object is returned. The attribute `scipy.optimize.OptimizeResult.x` stores the list of rotation angles.
 
